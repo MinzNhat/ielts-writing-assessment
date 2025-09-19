@@ -7,25 +7,41 @@ import { HeroUIProvider } from "@heroui/system";
 import { useRouter } from "next/navigation";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 
+/**
+ * Props for the Providers component.
+ * @interface ProvidersProps
+ */
 export interface ProvidersProps {
-  children: React.ReactNode;
-  themeProps?: ThemeProviderProps;
-}
+	/**
+	 * The children components to be wrapped by the Providers.
+	 */
+	children: React.ReactNode;
+	/**
+	 * Optional theme properties for the ThemeProvider.
+	 */
+	themeProps?: ThemeProviderProps;
+};
 
+/**
+ * Augment the RouterConfig interface to include routerOptions.
+ */
 declare module "@react-types/shared" {
-  interface RouterConfig {
-    routerOptions: NonNullable<
-      Parameters<ReturnType<typeof useRouter>["push"]>[1]
-    >;
-  }
-}
+	interface RouterConfig {
+		routerOptions: NonNullable<
+			Parameters<ReturnType<typeof useRouter>["push"]>[1]
+		>;
+	}
+};
 
+/**
+ * Providers component that wraps children
+ */
 export function Providers({ children, themeProps }: ProvidersProps) {
-  const router = useRouter();
+	const router = useRouter();
 
-  return (
-    <HeroUIProvider navigate={router.push}>
-      <NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
-    </HeroUIProvider>
-  );
-}
+	return (
+		<HeroUIProvider navigate={router.push}>
+			<NextThemesProvider {...themeProps}>{children}</NextThemesProvider>
+		</HeroUIProvider>
+	);
+};
