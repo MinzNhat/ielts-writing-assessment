@@ -6,6 +6,7 @@ import { title, subtitle } from "@/components/primitives";
 import FancyFadeIn from "../landing_page/components/FancyFadeIn";
 import SingleScoringSection from "./components/SingleScoringSection";
 import BatchScoringSection from "./components/BatchScoringSection";
+import Footer from "./components/Footer";
 
 const AssessmentPage = () => {
 	const [selectedMode, setSelectedMode] = useState<string>("single");
@@ -57,6 +58,8 @@ const AssessmentPage = () => {
 						<BatchScoringSection />
 					)}
 				</div>
+
+				<Footer />
 			</section>
 		</div>
 	);

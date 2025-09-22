@@ -9,6 +9,7 @@ import HowItWorksSection from "./components/HowItWorksSection";
 import TestimonialsSection from "./components/TestimonialsSection";
 import CallToActionSection from "./components/CallToActionSection";
 import { testimonials, steps } from "./components/data";
+import Footer from "./components/Footer";
 const LandingPage = () => {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -189,6 +190,8 @@ const LandingPage = () => {
 
 			{/* Page 4: Call to Action */}
 			<CallToActionSection />
+
+			<Footer />
 		</div>
 	);
 };

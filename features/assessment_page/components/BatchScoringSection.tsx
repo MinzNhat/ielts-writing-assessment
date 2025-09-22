@@ -147,8 +147,18 @@ const BatchScoringSection = () => {
 
 				{/* Upload Section */}
 				<Card className="w-full">
-					<CardHeader className="pb-3">
+					<CardHeader className="pb-3 flex justify-between items-center">
 						<h3 className="text-xl font-semibold">📁 Batch Essay Assessment</h3>
+						<Button
+							as="a"
+							href="/batch_scoring_sample.xlsx"
+							download
+							color="secondary"
+							variant="flat"
+							className="w-fit"
+						>
+							Download Sample File
+						</Button>
 					</CardHeader>
 					<Divider />
 					<CardBody className="space-y-4">
