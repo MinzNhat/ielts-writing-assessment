@@ -81,7 +81,7 @@ const BatchScoringSection = () => {
 		formData.append('file', selectedFile);
 
 		try {
-			const response = await fetch("http://125.253.113.103:8000/batch_scoring", {
+			const response = await fetch("https://api.engonow.com/intern_x", {
 				method: "POST",
 				body: formData,
 			});

@@ -57,7 +57,7 @@ const SingleScoringSection = () => {
 		setResult(null);
 
 		try {
-			const response = await fetch("http://125.253.113.103:8000/single_scoring", {
+			const response = await fetch("https://api.engonow.com/intern_x", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
