@@ -1,0 +1,8 @@
+/* Onborda Tutorial Styles */
+/* Note: pointer-events and z-index are managed via inline styles in ResultsDisplay.tsx */
+
+/* These styles are handled by JavaScript injection:
+   - pointer-events (overlay: none, pointer: auto, card: auto)
+   - z-index (overlay: 70, pointer: 70, card: 75)
+   - arrow color (white)
+*/

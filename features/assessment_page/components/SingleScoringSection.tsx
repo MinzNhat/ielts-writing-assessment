@@ -160,8 +160,11 @@ const SingleScoringSection = () => {
 					onOpenChange={onOpenChange}
 					size="2xl"
 					scrollBehavior="inside"
+					isDismissable={false}
 					classNames={{
-						'closeButton': "mt-2 mr-2"
+						'closeButton': "mt-2 mr-2",
+						backdrop: "z-[60]",
+						wrapper: "z-[60]"
 					}}
 				>
 					<ModalContent>

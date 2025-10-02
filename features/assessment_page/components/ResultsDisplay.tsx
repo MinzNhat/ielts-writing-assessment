@@ -2,12 +2,98 @@
 
 import React, { useState, useEffect } from 'react';
 import { Divider } from "@heroui/divider";
-import { Onborda, OnbordaProvider, Step, useOnborda } from "onborda";
+import { Button } from "@heroui/button";
+import { Onborda, OnbordaProvider, useOnborda } from "onborda";
+import type { CardComponentProps } from "onborda";
 
 // Internal imports
 import { ScoreResult } from './shared';
 import { ScoreCard } from './scoring';
 import { FeedbackModal } from './feedback';
+
+// Custom Tutorial Card Component
+const TutorialCard: React.FC<CardComponentProps> = ({
+	step,
+	currentStep,
+	totalSteps,
+	nextStep,
+	prevStep,
+	arrow,
+}) => {
+	const { closeOnborda } = useOnborda();
+
+	const handleSkip = () => {
+		localStorage.setItem('ielts-tutorial-seen', 'true');
+		closeOnborda();
+	};
+
+	const handleNext = () => {
+		console.log('Next button clicked, nextStep type:', typeof nextStep);
+		if (typeof nextStep === 'function') {
+			nextStep();
+		} else {
+			console.error('nextStep is not a function:', nextStep);
+		}
+	};
+
+	// Listen for custom event to advance tutorial (for Task Response click)
+	useEffect(() => {
+		const handleAdvanceTutorial = () => {
+			console.log('Received advance tutorial event, nextStep type:', typeof nextStep);
+			if (typeof nextStep === 'function') {
+				nextStep();
+			} else {
+				console.error('nextStep is not a function in event handler:', nextStep);
+			}
+		};
+
+		window.addEventListener('advance-tutorial', handleAdvanceTutorial);
+		return () => window.removeEventListener('advance-tutorial', handleAdvanceTutorial);
+	}, [nextStep]);
+
+	const isLastStep = currentStep + 1 === totalSteps;
+	const isFirstStep = currentStep === 0;
+	const showNextButton = !isFirstStep && !isLastStep; // Show Next only for steps 1-2 (Strengths, Improvements)
+
+	return (
+		<div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 w-[500px] relative z-[100000]">
+			<div className="flex items-center gap-3 mb-3">
+				<div className="text-2xl flex-shrink-0">{step.icon}</div>
+				<div className="flex-1 min-w-0">
+					<h3 className="text-base font-semibold text-gray-900 dark:text-white mb-0.5">
+						{step.title}
+					</h3>
+					<p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+						{step.content}
+					</p>
+				</div>
+				<div className="flex gap-2 flex-shrink-0">
+					{showNextButton && (
+						<Button
+							color="primary"
+							size="sm"
+							onClick={handleNext}
+						>
+							Next
+						</Button>
+					)}
+					<Button
+						color={isLastStep ? "primary" : "default"}
+						size="sm"
+						variant={isLastStep ? "solid" : "flat"}
+						onClick={handleSkip}
+					>
+						{isLastStep ? 'Finish' : 'Skip'}
+					</Button>
+				</div>
+			</div>
+			<div className="text-xs text-gray-500 text-center">
+				{currentStep + 1} / {totalSteps}
+			</div>
+			{arrow}
+		</div>
+	);
+};
 
 interface ResultsDisplayProps {
 	result: ScoreResult;
@@ -18,7 +104,7 @@ const ResultsDisplayContent: React.FC<ResultsDisplayProps> = ({ result, forExpor
 	// State management
 	const [selectedFeedback, setSelectedFeedback] = useState<{ title: string; feedback: any } | null>(null);
 	const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
-	const { startOnborda } = useOnborda();
+	const { startOnborda, currentStep } = useOnborda();
 
 	// Feedback handlers
 	const handleFeedbackClick = (title: string, criterion: string) => {
@@ -28,6 +114,24 @@ const ResultsDisplayContent: React.FC<ResultsDisplayProps> = ({ result, forExpor
 		if (feedbackData) {
 			setSelectedFeedback({ title, feedback: feedbackData });
 			setIsFeedbackModalOpen(true);
+
+			// Auto-advance tutorial to modal steps when Task Response modal opens
+			if (criterion === 'Task Response') {
+				const hasSeenTutorial = localStorage.getItem('ielts-tutorial-seen');
+				console.log('Task Response clicked, tutorial state:', {
+					hasSeenTutorial,
+					currentStep,
+					willAdvance: !hasSeenTutorial && currentStep === 0
+				});
+
+				if (!hasSeenTutorial && currentStep === 0) {
+					// Wait for modal to render before advancing to next step
+					setTimeout(() => {
+						console.log('Dispatching advance-tutorial event');
+						window.dispatchEvent(new CustomEvent('advance-tutorial'));
+					}, 300);
+				}
+			}
 		}
 	};
 
@@ -40,11 +144,22 @@ const ResultsDisplayContent: React.FC<ResultsDisplayProps> = ({ result, forExpor
 	useEffect(() => {
 		if (result.feedback && !forExport) {
 			const hasSeenTutorial = localStorage.getItem('ielts-tutorial-seen');
+			console.log('Tutorial check:', {
+				hasFeedback: !!result.feedback,
+				forExport,
+				hasSeenTutorial,
+				willStartTutorial: !hasSeenTutorial
+			});
 			if (!hasSeenTutorial) {
-				setTimeout(() => startOnborda("ielts-feedback-tour"), 500);
+				setTimeout(() => {
+					console.log('Starting tutorial: ielts-feedback-tour');
+					startOnborda("ielts-feedback-tour");
+				}, 500);
 			}
 		}
 	}, [result.feedback, forExport, startOnborda]);
+
+
 
 	// Export version - clean styling without tutorial
 	if (forExport) {
@@ -131,6 +246,7 @@ const ResultsDisplayContent: React.FC<ResultsDisplayProps> = ({ result, forExpor
 			<div className="grid grid-cols-2 gap-4">
 				{/* Task Response */}
 				<div
+					id="tutorial-task-response"
 					className={`text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 ${result.feedback ? 'cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors' : ''
 						}`}
 					onClick={() => result.feedback && handleFeedbackClick('Task Response', 'Task Response')}
@@ -178,6 +294,124 @@ const ResultsDisplayContent: React.FC<ResultsDisplayProps> = ({ result, forExpor
 				/>
 			)}
 		</div>
+	);
+};
+
+// Tutorial tours configuration
+const tutorialTours = [
+	{
+		tour: "ielts-feedback-tour",
+		steps: [
+			{
+				icon: <>🎯</>,
+				title: "Click to View Feedback",
+				content: <>Click this card to see detailed feedback about your Task Response</>,
+				selector: "#tutorial-task-response",
+				side: "right" as const,
+				showControls: false,
+				pointerPadding: 10,
+				pointerRadius: 10,
+			},
+			{
+				icon: <>✅</>,
+				title: "Strengths Section",
+				content: <>Review what you did well in your writing</>,
+				selector: "#tutorial-strengths",
+				side: "bottom" as const,
+				showControls: false,
+				pointerPadding: 10,
+				pointerRadius: 8,
+			},
+			{
+				icon: <>❌</>,
+				title: "Areas for Improvement",
+				content: <>Learn what needs improvement</>,
+				selector: "#tutorial-improvements",
+				side: "bottom" as const,
+				showControls: false,
+				pointerPadding: 10,
+				pointerRadius: 8,
+			},
+			{
+				icon: <>💡</>,
+				title: "Suggestions",
+				content: <>Get actionable tips to improve your score</>,
+				selector: "#tutorial-suggestions",
+				side: "top" as const,
+				showControls: false,
+				pointerPadding: 10,
+				pointerRadius: 8,
+			}
+		]
+	}
+];
+
+const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ result, forExport = false }) => {
+	// Apply pointer-events styles to Onborda elements and add click handler
+	useEffect(() => {
+		const styleSheet = document.createElement('style');
+		styleSheet.textContent = `
+			[data-name="onborda-overlay"] {
+				pointer-events: none !important;
+			}
+			[data-name="onborda-pointer"] {
+				pointer-events: auto !important;
+				cursor: pointer !important;
+			}
+			[data-name="onborda-card"] {
+				pointer-events: auto !important;
+			}
+			[data-name="onborda-arrow"] {
+				color: white !important;
+			}
+		`;
+		document.head.appendChild(styleSheet);
+
+		// Add click handler to forward clicks from pointer to the actual element
+		const handlePointerClick = (e: MouseEvent) => {
+			const target = e.target as HTMLElement;
+			const pointer = target.closest('[data-name="onborda-pointer"]');
+			const card = target.closest('[data-name="onborda-card"]');
+
+			// If clicking on spotlight (not on tutorial card)
+			if (pointer && !card) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				// Get the element being highlighted
+				const taskResponseCard = document.getElementById('tutorial-task-response');
+				if (taskResponseCard) {
+					// Create and dispatch a new click event
+					const clickEvent = new MouseEvent('click', {
+						bubbles: true,
+						cancelable: true,
+						view: window
+					});
+					taskResponseCard.dispatchEvent(clickEvent);
+				}
+			}
+		};
+
+		document.addEventListener('click', handlePointerClick, true);
+
+		return () => {
+			document.head.removeChild(styleSheet);
+			document.removeEventListener('click', handlePointerClick, true);
+		};
+	}, []);
+
+	return (
+		<OnbordaProvider>
+			<Onborda
+				steps={tutorialTours}
+				showOnborda={!forExport}
+				shadowRgb="100,100,100"
+				shadowOpacity="0.8"
+				cardComponent={TutorialCard}
+			>
+				<ResultsDisplayContent result={result} forExport={forExport} />
+			</Onborda>
+		</OnbordaProvider>
 	);
 };
 
