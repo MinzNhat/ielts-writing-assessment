@@ -3,7 +3,7 @@ import { Button } from "@heroui/button";
 import { Spinner } from "@heroui/spinner";
 // @ts-ignore
 import domtoimage from "dom-to-image-more";
-import { ScoreResult } from './types';
+import { ScoreResult } from '../shared/types';
 import { Code } from '@heroui/code';
 
 interface ShareActionsProps {
@@ -139,7 +139,7 @@ const ShareActions: React.FC<ShareActionsProps> = ({
                                 color: #6b7280;
                                 font-weight: 600;
                             ">
-                                ⏱️ Processed in ${result.time.toFixed(2)}s
+                                ⏱️ Processed in ${result.time ? result.time.toFixed(2) : '0.00'}s
                             </div>
                         </div>
 

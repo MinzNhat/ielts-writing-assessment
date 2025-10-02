@@ -6,6 +6,7 @@ import { Button } from "@heroui/button";
 import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Spinner } from "@heroui/spinner";
+import { Tabs, Tab } from "@heroui/tabs";
 import FancyFadeIn from "../../landing_page/components/FancyFadeIn";
 
 const BatchScoringSection = () => {
@@ -14,6 +15,7 @@ const BatchScoringSection = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [excelUrl, setExcelUrl] = useState<string | null>(null);
+	const [selectedTab, setSelectedTab] = useState("basic");
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,7 +83,10 @@ const BatchScoringSection = () => {
 		formData.append('file', selectedFile);
 
 		try {
-			const response = await fetch("https://api.engonow.com/intern_x", {
+			const feedbackParam = selectedTab === "detailed" ? "1" : "0";
+			const apiUrl = `http://125.253.113.103:8000/intern_x/batch_scoring/?feedback=${feedbackParam}`;
+
+			const response = await fetch(apiUrl, {
 				method: "POST",
 				body: formData,
 			});
@@ -148,7 +153,19 @@ const BatchScoringSection = () => {
 				{/* Upload Section */}
 				<Card className="w-full">
 					<CardHeader className="pb-3 flex justify-between items-center">
-						<h3 className="text-xl font-semibold">📁 Batch Essay Assessment</h3>
+						<div className="flex items-center gap-4">
+							<h3 className="text-xl font-semibold">📁 Batch Essay Assessment</h3>
+							<Tabs
+								selectedKey={selectedTab}
+								onSelectionChange={(key) => setSelectedTab(key as string)}
+								size="sm"
+								color="primary"
+								variant="bordered"
+							>
+								<Tab key="basic" title="Basic" />
+								<Tab key="detailed" title="Detailed" />
+							</Tabs>
+						</div>
 						<Button
 							as="a"
 							href="/batch_scoring_sample.xlsx"

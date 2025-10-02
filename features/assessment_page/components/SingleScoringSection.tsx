@@ -7,10 +7,11 @@ import { Card, CardBody, CardHeader } from "@heroui/card";
 import { Divider } from "@heroui/divider";
 import { Spinner } from "@heroui/spinner";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@heroui/modal";
+import { Tabs, Tab } from "@heroui/tabs";
 import FancyFadeIn from "../../landing_page/components/FancyFadeIn";
-import { ScoreResult } from './types';
+import { ScoreResult } from './shared';
 import ResultsDisplay from './ResultsDisplay';
-import ShareActions from './ShareActions';
+import { ShareActions } from './scoring';
 
 const SingleScoringSection = () => {
 	const [prompt, setPrompt] = useState("");
@@ -18,6 +19,7 @@ const SingleScoringSection = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [result, setResult] = useState<ScoreResult | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const [selectedTab, setSelectedTab] = useState("basic");
 	const { isOpen, onOpen, onOpenChange } = useDisclosure();
 	const modalContentRef = useRef<HTMLDivElement>(null);
 
@@ -26,6 +28,7 @@ const SingleScoringSection = () => {
 		setEssay("");
 		setResult(null);
 		setError(null);
+		setSelectedTab("basic");
 	};
 
 	// Add keyboard shortcut for reset
@@ -57,7 +60,8 @@ const SingleScoringSection = () => {
 		setResult(null);
 
 		try {
-			const response = await fetch("https://api.engonow.com/intern_x", {
+			const enableFeedback = selectedTab === "detailed";
+			const response = await fetch("http://125.253.113.103:8000/intern_x/single_scoring/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -65,6 +69,7 @@ const SingleScoringSection = () => {
 				body: JSON.stringify({
 					prompt: prompt.trim(),
 					essay: essay.trim(),
+					feedback: enableFeedback,
 				}),
 			});
 
@@ -87,8 +92,18 @@ const SingleScoringSection = () => {
 			<div className="w-full space-y-6">
 				{/* Input Section */}
 				<Card className="w-full">
-					<CardHeader className="pb-3">
+					<CardHeader className="pb-3 flex justify-between items-center">
 						<h3 className="text-xl font-semibold">📌 IELTS Essay Assessment</h3>
+						<Tabs
+							selectedKey={selectedTab}
+							onSelectionChange={(key) => setSelectedTab(key as string)}
+							size="sm"
+							color="primary"
+							variant="bordered"
+						>
+							<Tab key="basic" title="Basic" />
+							<Tab key="detailed" title="Detailed" />
+						</Tabs>
 					</CardHeader>
 					<Divider />
 					<CardBody className="space-y-4">
