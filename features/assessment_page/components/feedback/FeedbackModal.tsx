@@ -42,10 +42,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 						<ModalBody>
 							<div className="space-y-4">
 								{/* Strengths */}
-								<Card id="tutorial-strengths" data-feedback-section="strengths">
+								<Card id="tutorial-strengths" data-feedback-section="strengths" className="shadow-none">
 									<CardHeader className="pb-2">
 										<h4 className="text-md font-semibold text-green-600 dark:text-green-400">
-											✅ Strengths
+											Strengths
 										</h4>
 									</CardHeader>
 									<CardBody className="pt-0">
@@ -56,10 +56,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 								</Card>
 
 								{/* Weaknesses */}
-								<Card id="tutorial-improvements" data-feedback-section="improvements">
+								<Card id="tutorial-improvements" data-feedback-section="improvements" className="shadow-none">
 									<CardHeader className="pb-2">
 										<h4 className="text-md font-semibold text-red-600 dark:text-red-400">
-											❌ Areas for Improvement
+											Areas for Improvement
 										</h4>
 									</CardHeader>
 									<CardBody className="pt-0">
@@ -70,10 +70,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({
 								</Card>
 
 								{/* Suggestions */}
-								<Card id="tutorial-suggestions" data-feedback-section="suggestions">
+								<Card id="tutorial-suggestions" data-feedback-section="suggestions" className="shadow-none">
 									<CardHeader className="pb-2">
 										<h4 className="text-md font-semibold text-blue-600 dark:text-blue-400">
-											💡 Suggestions
+											Suggestions
 										</h4>
 									</CardHeader>
 									<CardBody className="pt-0">

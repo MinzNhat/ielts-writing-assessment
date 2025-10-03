@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, Tab } from "@heroui/tabs";
 import { title, subtitle } from "@/components/primitives";
 import FancyFadeIn from "../landing_page/components/FancyFadeIn";
@@ -10,6 +10,11 @@ import Footer from "./components/Footer";
 
 const AssessmentPage = () => {
 	const [selectedMode, setSelectedMode] = useState<string>("single");
+
+	// Ensure page starts at top to prevent scroll offset from navbar animation
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
 
 	return (
 		<div className="h-fit pb-8 overflow-hidden px-2 sm:px-4 lg:px-6 -mt-[50px] sm:-mt-[59px] md:-mt-[68px]">

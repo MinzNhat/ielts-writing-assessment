@@ -84,7 +84,7 @@ const BatchScoringSection = () => {
 
 		try {
 			const feedbackParam = selectedTab === "detailed" ? "1" : "0";
-			const apiUrl = `http://125.253.113.103:8000/intern_x/batch_scoring/?feedback=${feedbackParam}`;
+			const apiUrl = `https://api.engonow.com/intern_x/batch_scoring/?feedback=${feedbackParam}`;
 
 			const response = await fetch(apiUrl, {
 				method: "POST",
@@ -155,16 +155,6 @@ const BatchScoringSection = () => {
 					<CardHeader className="pb-3 flex justify-between items-center">
 						<div className="flex items-center gap-4">
 							<h3 className="text-xl font-semibold">📁 Batch Essay Assessment</h3>
-							<Tabs
-								selectedKey={selectedTab}
-								onSelectionChange={(key) => setSelectedTab(key as string)}
-								size="sm"
-								color="primary"
-								variant="bordered"
-							>
-								<Tab key="basic" title="Basic" />
-								<Tab key="detailed" title="Detailed" />
-							</Tabs>
 						</div>
 						<Button
 							as="a"
@@ -247,7 +237,18 @@ const BatchScoringSection = () => {
 							</div>
 						)}
 
-						<div className="flex justify-center pt-2 w-full">
+						<div className="flex justify-center pt-2 w-full gap-2">
+							<Tabs
+								selectedKey={selectedTab}
+								onSelectionChange={(key) => setSelectedTab(key as string)}
+								size="lg"
+								color="primary"
+								variant="bordered"
+							>
+								<Tab key="basic" title="No Feedback" className="text-sm" />
+								<Tab key="detailed" title="Feedback" className="text-sm" />
+							</Tabs>
+
 							<Button
 								color="primary"
 								size="lg"

@@ -61,7 +61,7 @@ const SingleScoringSection = () => {
 
 		try {
 			const enableFeedback = selectedTab === "detailed";
-			const response = await fetch("http://125.253.113.103:8000/intern_x/single_scoring/", {
+			const response = await fetch("https://api.engonow.com/intern_x/single_scoring/", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -94,16 +94,6 @@ const SingleScoringSection = () => {
 				<Card className="w-full">
 					<CardHeader className="pb-3 flex justify-between items-center">
 						<h3 className="text-xl font-semibold">📌 IELTS Essay Assessment</h3>
-						<Tabs
-							selectedKey={selectedTab}
-							onSelectionChange={(key) => setSelectedTab(key as string)}
-							size="sm"
-							color="primary"
-							variant="bordered"
-						>
-							<Tab key="basic" title="Basic" />
-							<Tab key="detailed" title="Detailed" />
-						</Tabs>
 					</CardHeader>
 					<Divider />
 					<CardBody className="space-y-4">
@@ -139,7 +129,21 @@ const SingleScoringSection = () => {
 							</div>
 						)}
 
-						<div className="flex justify-center">
+						<div className="flex justify-center gap-2">
+
+							<Tabs
+								selectedKey={selectedTab}
+								onSelectionChange={(key) => setSelectedTab(key as string)}
+								size="lg"
+								color="primary"
+								variant="bordered"
+							>
+								<Tab key="basic" title="No Feedback"
+									className="text-sm" />
+								<Tab key="detailed" title="Feedback"
+									className="text-sm" />
+							</Tabs>
+
 							<Button
 								color="primary"
 								size="lg"
